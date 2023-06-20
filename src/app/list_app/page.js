@@ -7,8 +7,34 @@ function ListApp() {
   const [optionsArray, setOptionsArray] = useState([])
   const [options, setOptions] = useState(Array(5).fill(false))
   const [checkAll, setcheckAll] = useState(false)
-
+  const [value,setValue] = useState(Array(5).fill(""))
   const reference = useRef()
+  const currentValue = useRef("")
+  const commonValue = useRef("")
+
+  const handleCommonInput = (e) =>{
+
+    console.log(selectPerticular);
+    if(selectPerticular){
+      const newValues = value.map((item,index)=>{
+        return item = e.target.value
+       
+      })
+      setValue(newValues)
+    }
+    console.log("This is value",value);
+  }
+
+  const handleCurrentValue=(e,index)=>{
+    setValue([])
+    console.log(e);
+    console.log(index);
+    const newValues = [...value]
+    newValues[index]=e.target.value
+    console.log(e.target.value);
+    setValue[newValues]
+    console.log("This is value",value.length);
+  }
 
   const handleSelectPerticular = () => {
     if (!selectPerticular) {
@@ -20,10 +46,12 @@ function ListApp() {
       setSameForAll(true)
     }
   }
+
   const handleSameForAll = () => {
     if (!sameForAll) {
       setSameForAll(true)
       setSelectPerticular(false)
+      setValue([])
       console.log('not hidden')
     } else {
       setSameForAll(false)
@@ -50,7 +78,7 @@ function ListApp() {
             name="radioOptions"
             value="option1"
             checked={sameForAll}
-            onChange={handleSameForAll}
+            onChange={handleSelectPerticular}
           />
           <label htmlFor="opt_1">Same For All</label>
         </div>
@@ -61,7 +89,7 @@ function ListApp() {
             name="radioOptions"
             value="option2"
             checked={selectPerticular}
-            onChange={handleSelectPerticular}
+            onChange={handleSameForAll}
           />
           <label htmlFor="opt_2">Set Perticular</label>
         </div>
@@ -70,7 +98,7 @@ function ListApp() {
       {selectPerticular && (
         <div>
           <label htmlFor="sameValue">Enter same value: </label>
-          <input type="text" id="sameValue" name="name" />
+          <input ref={commonValue} onChange={(e)=>handleCommonInput(e)} type="text" id="sameValue" name="name" />
         </div>
       )}
 
@@ -86,8 +114,8 @@ function ListApp() {
       <div>
         {options.map((item, index) => {
         return ( <div key ={index}>
-            <input type="checkbox" reference={reference} checked= {checkAll}/>
-            <input type='text'/>
+            <input type="checkbox"  defaultChecked= {checkAll}/>
+            <input value={value[index]} ref={currentValue} onChange={(e)=>handleCurrentValue(e,index)}type='text'/>
           </div>
           )
         })}
