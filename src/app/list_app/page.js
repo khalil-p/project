@@ -2,72 +2,66 @@
 import React, { useEffect, useRef, useState } from 'react'
 
 function ListApp() {
-  const [selectPerticular, setSelectPerticular] = useState(true)
-  const [sameForAll, setSameForAll] = useState(true)
-  const [optionsArray, setOptionsArray] = useState([])
+  const [selectPerticular, setSelectPerticular] = useState(false)
+  const [sameForAll, setSameForAll] = useState(false)
+  const [values,setValues] = useState(Array(5).fill(""))
+  const [nameValue,setNameValue] = useState(["a","b","c","d","f"])
+  const [arrayAfterSelectAll, setArrayAfterSelectAll] = useState([])
   const [options, setOptions] = useState(Array(5).fill(false))
   const [checkAll, setcheckAll] = useState(false)
-  const [value,setValue] = useState(Array(5).fill(""))
   const reference = useRef()
   const currentValue = useRef("")
   const commonValue = useRef("")
+  const repectiveValue = useRef("")
 
-  const handleCommonInput = (e) =>{
-
-    console.log(selectPerticular);
-    if(selectPerticular){
-      const newValues = value.map((item,index)=>{
-        return item = e.target.value
-       
-      })
-      setValue(newValues)
-    }
-    console.log("This is value",value);
+  const handleCommonInput = () =>{
+    // Why map not working here
+    setValues(Array(5).fill(commonValue.current.value))
   }
 
   const handleCurrentValue=(e,index)=>{
-    setValue([])
-    console.log(e);
-    console.log(index);
-    const newValues = [...value]
+    setValues([])
+    const newValues = [...values]
     newValues[index]=e.target.value
-    console.log(e.target.value);
-    setValue[newValues]
-    console.log("This is value",value.length);
+    setValues[newValues]
   }
 
   const handleSelectPerticular = () => {
-    if (!selectPerticular) {
       setSelectPerticular(true)
       setSameForAll(false)
-      console.log('hidden')
-    } else {
-      setSelectPerticular(false)
-      setSameForAll(true)
-    }
   }
 
   const handleSameForAll = () => {
-    if (!sameForAll) {
       setSameForAll(true)
       setSelectPerticular(false)
-      setValue([])
-      console.log('not hidden')
-    } else {
-      setSameForAll(false)
-      setSelectPerticular(true)
-    }
+      setValues([])
   }
 
   const selectAllOptions = () => {
+    const newArrAY =[]
     if(!checkAll){
       setcheckAll(true)
-    }else{
+      nameValue.forEach((item,index)=>{
+          newArrAY.push({name:item,value:values[index]})
+      })
+      setArrayAfterSelectAll(newArrAY)
+    }else if(checkAll){
       setcheckAll(false)
+      console.log(newArrAY.length);
+      setArrayAfterSelectAll(newArrAY)
     }
-    
   }
 
+
+  useEffect(()=>{
+    console.log("This is arrayAfterSelectAll....",arrayAfterSelectAll);
+  },[arrayAfterSelectAll])
+
+  const handleRespectiveValue =(index)=>{
+    console.log("61=>",currentValue.current.value, index)
+    const newArray = arrayAfterSelectAll.splice(index,index)
+    setArrayAfterSelectAll(newArray)
+  }
   return (
     <>
       <div>
@@ -78,7 +72,7 @@ function ListApp() {
             name="radioOptions"
             value="option1"
             checked={sameForAll}
-            onChange={handleSelectPerticular}
+            onChange={handleSameForAll}
           />
           <label htmlFor="opt_1">Same For All</label>
         </div>
@@ -89,16 +83,16 @@ function ListApp() {
             name="radioOptions"
             value="option2"
             checked={selectPerticular}
-            onChange={handleSameForAll}
+            onChange={handleSelectPerticular}
           />
           <label htmlFor="opt_2">Set Perticular</label>
         </div>
       </div>
 
-      {selectPerticular && (
+      {sameForAll && (
         <div>
           <label htmlFor="sameValue">Enter same value: </label>
-          <input ref={commonValue} onChange={(e)=>handleCommonInput(e)} type="text" id="sameValue" name="name" />
+          <input ref={commonValue} onChange={handleCommonInput} type="text" id="sameValue" name="name" />
         </div>
       )}
 
@@ -114,8 +108,9 @@ function ListApp() {
       <div>
         {options.map((item, index) => {
         return ( <div key ={index}>
-            <input type="checkbox"  defaultChecked= {checkAll}/>
-            <input value={value[index]} ref={currentValue} onChange={(e)=>handleCurrentValue(e,index)}type='text'/>
+            <input ref={repectiveValue} onChange={()=>handleRespectiveValue(index)} type="checkbox"   defaultChecked= {checkAll}/>
+            <span>{nameValue[index]} : </span>
+            <input value={values[index]} ref={currentValue} onChange={(e)=>handleCurrentValue(e,index)}type='text'/>
           </div>
           )
         })}
